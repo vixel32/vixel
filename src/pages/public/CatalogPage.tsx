@@ -282,7 +282,7 @@ export default function CatalogPage() {
       <div className="container-page py-6">
         <div className="flex flex-wrap gap-2 justify-center">
 
-          <a
+          <Link
             to="/katalog"
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
               !slug
@@ -291,10 +291,10 @@ export default function CatalogPage() {
             }`}
           >
             Semua
-          </a>
+          </Link>
 
           {categories.map((cat) => (
-            <a
+            <Link
               key={cat.id}
               to={`/katalog/${cat.slug}`}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
@@ -304,7 +304,7 @@ export default function CatalogPage() {
               }`}
             >
               {cat.name}
-            </a>
+            </Link>
           ))}
 
         </div>

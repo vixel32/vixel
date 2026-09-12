@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { SlidersHorizontal, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import type { Product, ProductCategory } from '@/lib/types';
@@ -283,7 +283,7 @@ export default function CatalogPage() {
         <div className="flex flex-wrap gap-2 justify-center">
 
           <a
-            href="/katalog"
+            to="/katalog"
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
               !slug
                 ? 'bg-navy-600 text-white'
@@ -296,7 +296,7 @@ export default function CatalogPage() {
           {categories.map((cat) => (
             <a
               key={cat.id}
-              href={`/katalog/${cat.slug}`}
+              to={`/katalog/${cat.slug}`}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 slug === cat.slug
                   ? 'bg-navy-600 text-white'

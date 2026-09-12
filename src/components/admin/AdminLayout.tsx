@@ -70,10 +70,15 @@ export default function AdminLayout() {
         </nav>
 
         <div className="shrink-0 p-4 border-t border-navy-800 space-y-1">
-          <a href="/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-cream-100/70 hover:bg-navy-800 transition-all">
+          <NavLink
+            to="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-cream-100/70 hover:bg-navy-800 transition-all"
+            >
             <ExternalLink className="w-5 h-5" />
             Lihat Toko
-          </a>
+          </NavLink>
           <button onClick={handleSignOut} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gold-300 hover:bg-gold-400/10 transition-all">
             <LogOut className="w-5 h-5" />
             Keluar

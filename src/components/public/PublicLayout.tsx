@@ -142,7 +142,7 @@ export default function PublicLayout() {
             <div>
               <div className="flex items-center gap-2.5 mb-4">
                 <img
-                  src="/assets/images/ChatGPT_Image_23_Jun_2026,_11.14.58.png"
+                  src={`${import.meta.env.BASE_URL}assets/images/ChatGPT_Image_23_Jun_2026,_11.14.58.png`}
                   alt="Vixel"
                   className="w-9 h-9 rounded-full object-cover"
                 />

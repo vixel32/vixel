@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-cream-50 text-charcoal-700 font-sans antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-navy-800 text-white hover:bg-navy-900 shadow-sm hover:shadow-md;
+  }
+  .btn-gold {
+    @apply btn bg-gold-500 text-white hover:bg-gold-600 shadow-sm hover:shadow-md;
+  }
+  .btn-outline {
+    @apply btn border border-charcoal-200 text-charcoal-700 hover:border-navy-400 hover:text-navy-600 bg-white;
+  }
+  .btn-wa {
+    @apply btn bg-[#25D366] text-white hover:bg-[#1da851] shadow-sm hover:shadow-md;
+  }
+  .card {
+    @apply bg-white rounded-2xl shadow-sm border border-charcoal-100/60 transition-all duration-300;
+  }
+  .input {
+    @apply w-full rounded-xl border border-charcoal-200 bg-white px-4 py-2.5 text-sm text-charcoal-700 placeholder-charcoal-300 focus:border-navy-400 focus:ring-2 focus:ring-navy-100 outline-none transition-all;
+  }
+  .label {
+    @apply block text-sm font-medium text-charcoal-600 mb-1.5;
+  }
+  .section-title {
+    @apply font-serif text-3xl sm:text-4xl font-bold text-navy-900;
+  }
+  .section-subtitle {
+    @apply text-charcoal-400 text-base mt-2;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-invoice, .print-invoice * {
+    visibility: visible;
+  }
+  .print-invoice {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+  .no-print {
+    display: none !important;
+  }
+}

@@ -37,7 +37,7 @@ export default function AdminLayout() {
         <div className="flex items-center justify-between p-6 border-b border-navy-800">
           <div className="flex items-center gap-2.5">
             <img
-              src="/assets/images/ChatGPT_Image_23_Jun_2026,_11.14.58.png"
+              src={`${import.meta.env.BASE_URL}logo.png`}
               alt="Vixel"
               className="w-9 h-9 rounded-full object-cover"
             />

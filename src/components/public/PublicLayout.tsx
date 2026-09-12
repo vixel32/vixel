@@ -45,7 +45,7 @@ export default function PublicLayout() {
         <div className="container-page flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2.5">
             <img
-              src="/assets/images/ChatGPT_Image_23_Jun_2026,_11.14.58.png"
+              src={`${import.meta.env.BASE_URL}assets/images/ChatGPT_Image_23_Jun_2026,_11.14.58.png`}
               alt="Vixel"
               className="w-9 h-9 rounded-full object-cover"
             />

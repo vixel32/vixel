@@ -7,7 +7,7 @@ export default function ProductCard({ product }: { product: Product }) {
   const img = product.product_images?.[0]?.image_url;
 
   return (
-    <Link to={`/katalog/${product.slug}`} className="card group overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+   <Link to={`/katalog/${product.id}`} className="card group overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
       <div className="relative aspect-[4/3] bg-cream-100 overflow-hidden">
         {img ? (
           <img

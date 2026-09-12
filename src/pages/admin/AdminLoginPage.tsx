@@ -41,7 +41,7 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <img
-            src="/assets/images/ChatGPT_Image_23_Jun_2026,_11.14.58.png"
+            src={`${import.meta.env.BASE_URL}assets/images/ChatGPT_Image_23_Jun_2026,_11.14.58.png`}
             alt="Vixel"
             className="w-16 h-16 mx-auto rounded-full object-cover shadow-lg mb-4"
           />

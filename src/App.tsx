@@ -49,7 +49,7 @@ function PublicRoutes() {
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter basename="/vixel">
+      <BrowserRouter>
         <Routes>
           {/* Public storefront */}
           <Route path="/*" element={<PublicRoutes />} />

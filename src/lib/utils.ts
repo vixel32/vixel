@@ -77,3 +77,14 @@ export function getGoogleDriveEmbedUrl(url: string): string {
   }
   return url;
 }
+
+
+/**
+ * Menghitung harga asli / harga dicoret.
+ *
+ * Harga dicoret = harga jual + 20%
+ * Dibulatkan ke Rp1.000 terdekat.
+ */
+export function getOriginalPrice(price: number): number {
+  return Math.round((price * 1.2) / 1000) * 1000;
+}

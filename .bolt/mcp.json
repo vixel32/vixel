@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "vixel": {
+      "enabled": true
+    },
+    "github": {
+      "enabled": true
+    }
+  }
+}

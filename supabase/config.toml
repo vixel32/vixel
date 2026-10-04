@@ -1,0 +1,15 @@
+[functions.create-backup]
+verify_jwt = true
+entrypoint = "./functions/create-backup/index.ts"
+
+[functions.restore-backup]
+verify_jwt = true
+entrypoint = "./functions/restore-backup/index.ts"
+
+[functions.install-update]
+verify_jwt = true
+entrypoint = "./functions/install-update/index.ts"
+
+[functions.generate-video-images]
+verify_jwt = true
+entrypoint = "./functions/generate-video-images/index.ts"

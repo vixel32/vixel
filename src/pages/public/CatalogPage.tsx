@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { SlidersHorizontal, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { SlidersHorizontal, X, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import type { Product, ProductCategory } from '@/lib/types';
 import ProductCard from '@/components/public/ProductCard';
@@ -19,6 +19,7 @@ export default function CatalogPage() {
   const [showFilters, setShowFilters] = useState(false);
 
   const [sort, setSort] = useState<SortOption>('newest');
+  const [searchQuery, setSearchQuery] = useState('');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [theme, setTheme] = useState('');
@@ -93,6 +94,14 @@ export default function CatalogPage() {
       list = list.filter((p) => p.theme === theme);
     }
 
+    // Filter pencarian nama produk
+    if (searchQuery.trim()) {
+      const query = searchQuery.trim().toLowerCase();
+      list = list.filter((p) =>
+        p.name.toLowerCase().includes(query)
+      );
+    }
+
     // Sorting
     switch (sort) {
       case 'price-low':
@@ -121,7 +130,15 @@ export default function CatalogPage() {
     minPrice,
     maxPrice,
     theme,
+    searchQuery,
   ]);
+
+  /*
+   * Reset halaman ketika pencarian berubah
+   */
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   /*
    * Reset halaman ketika filter/sorting/kategori berubah
@@ -135,6 +152,13 @@ export default function CatalogPage() {
     maxPrice,
     theme,
   ]);
+
+  /*
+   * Reset pencarian ketika kategori berubah
+   */
+  useEffect(() => {
+    setSearchQuery('');
+  }, [slug]);
 
   /*
    * Pagination calculation
@@ -335,9 +359,30 @@ export default function CatalogPage() {
               </button>
             </div>
 
-            <div className="card p-5 lg:sticky lg:top-24">
+            <div className="space-y-4 lg:sticky lg:top-24">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-charcoal-300 pointer-events-none" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Pencarian"
+                  aria-label="Pencarian produk"
+                  className="input pl-11 pr-10"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg text-charcoal-300 hover:text-charcoal-600 hover:bg-navy-50"
+                    aria-label="Hapus pencarian"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
 
-              <h3 className="font-serif text-lg font-semibold mb-4 hidden lg:block">
+              <div className="card p-5">
+                <h3 className="font-serif text-lg font-semibold mb-4 hidden lg:block">
                 Filter
               </h3>
 
@@ -445,12 +490,13 @@ export default function CatalogPage() {
               </div>
 
               {/* Reset */}
-              {(minPrice || maxPrice || theme) && (
+              {(minPrice || maxPrice || theme || searchQuery) && (
                 <button
                   onClick={() => {
                     setMinPrice('');
                     setMaxPrice('');
                     setTheme('');
+                    setSearchQuery('');
                   }}
                   className="text-xs text-navy-600 hover:underline"
                 >
@@ -458,15 +504,16 @@ export default function CatalogPage() {
                 </button>
               )}
 
+              </div>
             </div>
           </aside>
 
           {/* Products */}
           <div className="flex-1">
 
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-6 gap-4">
 
-              <p className="text-sm text-charcoal-400">
+              <p className="text-sm text-charcoal-400 shrink-0">
                 {loading
                   ? 'Memuat...'
                   : `${filtered.length} produk ditemukan`}
@@ -474,7 +521,7 @@ export default function CatalogPage() {
 
               <button
                 onClick={() => setShowFilters(true)}
-                className="lg:hidden btn-outline text-sm px-4 py-2"
+                className="lg:hidden btn-outline text-sm px-4 py-2 shrink-0"
               >
                 <SlidersHorizontal className="w-4 h-4" />
                 Filter

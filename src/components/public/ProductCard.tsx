@@ -4,6 +4,7 @@ import {
   formatPrice,
   normalizeImageUrl,
   getOriginalPrice,
+  getSafeExternalUrl,
 } from '@/lib/utils';
 import type { Product } from '@/lib/types';
 
@@ -13,14 +14,11 @@ export default function ProductCard({
   product: Product;
 }) {
   const img = product.product_images?.[0]?.image_url;
-
   const originalPrice = getOriginalPrice(product.price);
+  const affiliateDetailUrl = getSafeExternalUrl(product.affiliate_detail_url);
 
-  return (
-    <Link
-      to={`/produk/${product.id}`}
-      className="card group overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-    >
+  const cardContent = (
+    <>
       <div className="relative aspect-[4/3] bg-cream-100 overflow-hidden">
         {img ? (
           <img
@@ -68,9 +66,7 @@ export default function ProductCard({
           </p>
         )}
 
-        {/* Harga */}
         <div className="mt-2">
-          {/* Harga dicoret + diskon */}
           <div className="flex items-center gap-2">
             <span className="text-xs text-charcoal-400 line-through">
               {formatPrice(originalPrice)}
@@ -81,12 +77,33 @@ export default function ProductCard({
             </span>
           </div>
 
-          {/* Harga jual */}
           <p className="text-sm font-bold text-charcoal-800 mt-0.5">
             {formatPrice(product.price)}
           </p>
         </div>
       </div>
+    </>
+  );
+
+  if (affiliateDetailUrl) {
+    return (
+      <a
+        href={affiliateDetailUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="card group overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+      >
+        {cardContent}
+      </a>
+    );
+  }
+
+  return (
+    <Link
+      to={`/produk/${product.id}`}
+      className="card group overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+    >
+      {cardContent}
     </Link>
   );
 }

@@ -3,7 +3,7 @@ import {
   Plus, Pencil, Trash2, X, Loader2, Upload, Star, Image as ImageIcon, Check, ChevronsUpDown, Link2, Cloud, Download, FileUp, FileSpreadsheet,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { formatPrice, normalizeImageUrl } from '@/lib/utils';
+import { formatPrice, normalizeImageUrl, extractGoogleDriveId, getSafeExternalUrl } from '@/lib/utils';
 import { pickFromGoogleDrive, isGoogleDriveConfigured } from '@/lib/googleDrive';
 import { exportProductsToExcel, importProductsFromExcel, downloadImportTemplate } from '@/lib/productExcel';
 import type { Product, ProductCategory, ProductImage } from '@/lib/types';
@@ -19,6 +19,8 @@ const emptyForm = {
   unlimited_stock: false,
   video_url: '',
   preview_link: '',
+  affiliate_detail_url: '',
+  order_button_url: '',
   theme: '',
   category_id: '',
   is_featured: false,
@@ -99,13 +101,26 @@ export default function AdminProducts() {
           video_url: video.url,
         }));
 
-        // Link Google Drive bukan YouTube,
-        // jadi thumbnail YouTube dihapus jika sebelumnya ada.
+        // Hapus thumbnail sebelumnya
         if (youtubeThumbnailUrl) {
           setNewImageUrls((prev) =>
             prev.filter((url) => url !== youtubeThumbnailUrl)
           );
           setYoutubeThumbnailUrl(null);
+        }
+
+        // Buat thumbnail otomatis dari video Google Drive
+        const driveId = extractGoogleDriveId(video.url) ?? video.id;
+        if (driveId) {
+          const driveThumbnail =
+            `https://lh3.googleusercontent.com/d/${driveId}=w1000`;
+
+          setYoutubeThumbnailUrl(driveThumbnail);
+
+          setNewImageUrls((prev) => [
+            ...prev.filter((url) => url !== driveThumbnail),
+            driveThumbnail,
+          ]);
         }
       }
     } catch (err: any) {
@@ -115,16 +130,18 @@ export default function AdminProducts() {
     setPickingDrive(false);
   };
 
-  // Membuat thumbnail YouTube otomatis.
-  // Thumbnail diambil dari i.ytimg.com lalu dibuat square
-  // 1080x1080 menggunakan Cloudinary Fetch.
+  // Membuat thumbnail otomatis dari URL video.
+  // Untuk YouTube: thumbnail diambil dari i.ytimg.com lalu
+  // dibuat square 1080x1080 menggunakan Cloudinary Fetch.
+  // Untuk Google Drive: thumbnail diambil dari
+  // lh3.googleusercontent.com yang lebih reliable untuk embed.
   const handleVideoUrlChange = (value: string) => {
     setForm((prev) => ({
       ...prev,
       video_url: value,
     }));
 
-    // Hapus thumbnail YouTube sebelumnya
+    // Hapus thumbnail sebelumnya
     if (youtubeThumbnailUrl) {
       setNewImageUrls((prev) =>
         prev.filter((url) => url !== youtubeThumbnailUrl)
@@ -132,28 +149,46 @@ export default function AdminProducts() {
       setYoutubeThumbnailUrl(null);
     }
 
-    const match = value.match(
+    // Cek YouTube
+    const ytMatch = value.match(
       /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([^&?/\s]+)/
     );
 
-    if (!match) return;
+    if (ytMatch) {
+      const videoId = ytMatch[1];
 
-    const videoId = match[1];
+      const remoteThumbnail =
+        `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
 
-    const remoteThumbnail =
-      `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
+      const cloudinaryThumbnail =
+        `https://res.cloudinary.com/zphqng50/image/fetch/` +
+        `c_fill,w_1080,h_1080,g_center/` +
+        encodeURIComponent(remoteThumbnail);
 
-    const cloudinaryThumbnail =
-      `https://res.cloudinary.com/zphqng50/image/fetch/` +
-      `c_fill,w_1080,h_1080,g_center/` +
-      encodeURIComponent(remoteThumbnail);
+      setYoutubeThumbnailUrl(cloudinaryThumbnail);
 
-    setYoutubeThumbnailUrl(cloudinaryThumbnail);
+      setNewImageUrls((prev) => [
+        ...prev.filter((url) => url !== cloudinaryThumbnail),
+        cloudinaryThumbnail,
+      ]);
 
-    setNewImageUrls((prev) => [
-      ...prev.filter((url) => url !== cloudinaryThumbnail),
-      cloudinaryThumbnail,
-    ]);
+      return;
+    }
+
+    // Cek Google Drive
+    const driveId = extractGoogleDriveId(value);
+
+    if (driveId) {
+      const driveThumbnail =
+        `https://lh3.googleusercontent.com/d/${driveId}=w1000`;
+
+      setYoutubeThumbnailUrl(driveThumbnail);
+
+      setNewImageUrls((prev) => [
+        ...prev.filter((url) => url !== driveThumbnail),
+        driveThumbnail,
+      ]);
+    }
   };
 
   const load = useCallback(async () => {
@@ -203,6 +238,8 @@ export default function AdminProducts() {
       unlimited_stock: product.stock === null,
       video_url: product.video_url ?? '',
       preview_link: product.preview_link ?? '',
+      affiliate_detail_url: product.affiliate_detail_url ?? '',
+      order_button_url: product.order_button_url ?? '',
       theme: product.theme ?? '',
       category_id: product.category_id,
       is_featured: product.is_featured,
@@ -299,6 +336,14 @@ export default function AdminProducts() {
     setSaving(true);
     setError(null);
 
+    const affiliateDetailUrl = getSafeExternalUrl(form.affiliate_detail_url);
+
+    if (form.affiliate_detail_url.trim() && !affiliateDetailUrl) {
+      setError('Link detail afiliasi harus menggunakan URL http atau https yang valid.');
+      setSaving(false);
+      return;
+    }
+
     const payload = {
       name: form.name,
       description: form.description || null,
@@ -309,6 +354,8 @@ export default function AdminProducts() {
         : (parseInt(form.stock) || 0),
       video_url: form.video_url || null,
       preview_link: form.preview_link || null,
+      affiliate_detail_url: affiliateDetailUrl,
+      order_button_url: form.order_button_url || null,
       theme: form.theme || null,
       category_id: form.category_id,
       is_featured: form.is_featured,
@@ -441,6 +488,7 @@ export default function AdminProducts() {
         stock: item.stock === null ? null : item.stock,
         video_url: item.video_url || null,
         preview_link: item.preview_link || null,
+        affiliate_detail_url: getSafeExternalUrl(item.affiliate_detail_url),
         theme: item.theme || null,
         category_id: cat.id,
         is_featured: item.is_featured,
@@ -1404,7 +1452,7 @@ export default function AdminProducts() {
                   </div>
 
                   <p className="text-xs text-charcoal-400 mt-1.5">
-                    Jika memasukkan URL YouTube, thumbnail
+                    Jika memasukkan URL YouTube atau Google Drive, thumbnail
                     otomatis ditambahkan ke Galeri Foto Produk.
                   </p>
 
@@ -1412,14 +1460,14 @@ export default function AdminProducts() {
                     <div className="mt-3 flex items-center gap-3 rounded-xl bg-navy-50 border border-navy-100 p-3">
                       <img
                         src={youtubeThumbnailUrl}
-                        alt="Thumbnail YouTube"
+                        alt="Thumbnail video"
                         referrerPolicy="no-referrer"
                         className="w-16 h-16 rounded-lg object-cover"
                       />
 
                       <div>
                         <p className="text-sm font-medium text-charcoal-700">
-                          Thumbnail YouTube
+                          Thumbnail Video
                         </p>
 
                         <p className="text-xs text-charcoal-400">
@@ -1526,6 +1574,52 @@ export default function AdminProducts() {
                     }
                     placeholder="https://..."
                   />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="label">
+                    Halaman Detail Afiliasi
+                  </label>
+
+                  <input
+                    type="url"
+                    className="input"
+                    value={form.affiliate_detail_url}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        affiliate_detail_url: e.target.value,
+                      })
+                    }
+                    placeholder="Kosongkan untuk halaman detail Vixel, atau isi link afiliasi..."
+                  />
+
+                  <p className="text-xs text-charcoal-400 mt-1.5">
+                    Jika kosong, kartu produk membuka halaman detail Vixel seperti biasa. Jika diisi, kartu produk mengarah ke halaman afiliasi ini.
+                  </p>
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="label">
+                    Tombol Pesan Sekarang
+                  </label>
+
+                  <input
+                    className="input"
+                    value={form.order_button_url}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        order_button_url:
+                          e.target.value,
+                      })
+                    }
+                    placeholder="Kosongkan untuk WhatsApp, atau isi link afiliate..."
+                  />
+
+                  <p className="text-xs text-charcoal-400 mt-1.5">
+                    Jika dikosongkan, tombol \u201CPesan Sekarang\u201D akan membuka form pemesanan via WhatsApp. Jika diisi dengan link (mis. link afiliate), tombol akan langsung mengarah ke link tersebut.
+                  </p>
                 </div>
 
                 <div className="sm:col-span-2">

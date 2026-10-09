@@ -44,8 +44,12 @@ function getAccessToken(clientId: string): Promise<string> {
           reject(new Error(resp.error_description || resp.error));
           return;
         }
+        if (!resp.access_token) {
+          reject(new Error('Google Drive access token tidak tersedia.'));
+          return;
+        }
         accessToken = resp.access_token;
-        resolve(accessToken);
+        resolve(resp.access_token);
       },
     });
     tokenClient.requestAccessToken();

@@ -62,11 +62,7 @@ function PublicRoutes() {
 
         <Route
           path="/produk/:id"
-          element={
-            <ProductDetailPage
-              settings={settings}
-            />
-          }
+          element={<ProductDetailPage />}
         />
 
         <Route

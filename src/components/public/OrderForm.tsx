@@ -10,6 +10,7 @@ interface OrderFormProps {
   isUndangan: boolean;
   isUndanganDigital: boolean;
   isUndanganCetak: boolean;
+  isUndangan3D: boolean;
   onClose: () => void;
 }
 
@@ -19,6 +20,7 @@ export default function OrderForm({
   isUndangan,
   isUndanganDigital,
   isUndanganCetak,
+  isUndangan3D,
   onClose,
 }: OrderFormProps) {
   // =========================
@@ -436,12 +438,21 @@ export default function OrderForm({
         }
 
         // =========================
-        // UNDANGAN CETAK
+        // UNDANGAN CETAK — TURUT MENGUNDANG
         // =========================
         if (isUndanganCetak) {
           messageParts.push('');
           messageParts.push('*TURUT MENGUNDANG*');
           messageParts.push(printInviteNames || '-');
+        }
+
+        // =========================
+        // UNDANGAN 3D — tidak ada turut mengundang
+        // =========================
+        if (isUndangan3D) {
+          messageParts.push('');
+          messageParts.push('*UNDANGAN 3D*');
+          messageParts.push('Jenis: Undangan 3D');
         }
       }
 
@@ -1428,7 +1439,7 @@ export default function OrderForm({
                 )}
 
                 {/* =========================
-                    CETAK
+                    CETAK — TURUT MENGUNDANG
                 ========================= */}
                 {isUndanganCetak && (
                   <section className={sectionClass}>
@@ -1456,6 +1467,24 @@ Keluarga Besar ..."
                       rows={6}
                       className={textareaClass}
                     />
+                  </section>
+                )}
+
+                {/* =========================
+                    UNDANGAN 3D
+                    — Tidak ada bagian turut mengundang
+                ========================= */}
+                {isUndangan3D && (
+                  <section className={sectionClass}>
+                    <div className="mb-4">
+                      <h3 className="font-semibold text-gray-900">
+                        Undangan 3D
+                      </h3>
+
+                      <p className="mt-1 text-xs text-gray-500">
+                        Detail desain dan format 3D akan dikonsultasikan via WhatsApp.
+                      </p>
+                    </div>
                   </section>
                 )}
               </>

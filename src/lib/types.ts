@@ -26,6 +26,8 @@ export interface Product {
   stock: number | null;
   video_url: string | null;
   preview_link: string | null;
+  affiliate_detail_url: string | null;
+  order_button_url: string | null;
   theme: string | null;
   is_featured: boolean;
   is_active: boolean;

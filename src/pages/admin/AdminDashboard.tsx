@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Package, Clock, TrendingUp, ArrowRight } from 'lucide-react';
+import {
+  ShoppingCart,
+  Package,
+  Clock,
+  TrendingUp,
+  ArrowRight,
+} from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { formatDate, formatPrice } from '@/lib/utils';
 import type { Order } from '@/lib/types';

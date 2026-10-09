@@ -11,6 +11,7 @@ export interface ProductExportRow {
   Tema: string;
   'URL Video': string;
   'Link Preview': string;
+  'Link Detail Afiliasi': string;
   Unggulan: string;
   Aktif: string;
   'URL Gambar Utama': string;
@@ -29,6 +30,7 @@ export function exportProductsToExcel(products: Product[], categories: ProductCa
     Tema: p.theme ?? '',
     'URL Video': p.video_url ?? '',
     'Link Preview': p.preview_link ?? '',
+    'Link Detail Afiliasi': p.affiliate_detail_url ?? '',
     Unggulan: p.is_featured ? 'Ya' : 'Tidak',
     Aktif: p.is_active ? 'Ya' : 'Tidak',
     'URL Gambar Utama': p.product_images?.[0]?.image_url ?? '',
@@ -37,7 +39,7 @@ export function exportProductsToExcel(products: Product[], categories: ProductCa
   const ws = XLSX.utils.json_to_sheet(rows);
   ws['!cols'] = [
     { wch: 25 }, { wch: 18 }, { wch: 30 }, { wch: 14 }, { wch: 14 },
-    { wch: 8 }, { wch: 18 }, { wch: 30 }, { wch: 30 }, { wch: 10 },
+    { wch: 8 }, { wch: 18 }, { wch: 30 }, { wch: 30 }, { wch: 30 }, { wch: 10 },
     { wch: 10 }, { wch: 40 },
   ];
 
@@ -63,6 +65,7 @@ export interface ImportedProduct {
   theme: string;
   video_url: string;
   preview_link: string;
+  affiliate_detail_url: string;
   is_featured: boolean;
   is_active: boolean;
   image_url: string;
@@ -93,6 +96,7 @@ export async function importProductsFromExcel(
     theme: String(row['Tema'] ?? row['tema'] ?? '').trim(),
     video_url: String(row['URL Video'] ?? row['url video'] ?? '').trim(),
     preview_link: String(row['Link Preview'] ?? row['link preview'] ?? '').trim(),
+    affiliate_detail_url: String(row['Link Detail Afiliasi'] ?? row['link detail afiliasi'] ?? '').trim(),
     is_featured: String(row['Unggulan'] ?? row['unggulan'] ?? '').toLowerCase() === 'ya',
     is_active: String(row['Aktif'] ?? row['aktif'] ?? '').toLowerCase() !== 'tidak',
     image_url: String(row['URL Gambar Utama'] ?? row['url gambar utama'] ?? '').trim(),
@@ -112,6 +116,7 @@ export function downloadImportTemplate(categories: ProductCategory[]): void {
     Tema: 'Floral Garden',
     'URL Video': '',
     'Link Preview': '',
+    'Link Detail Afiliasi': '',
     Unggulan: 'Tidak',
     Aktif: 'Ya',
     'URL Gambar Utama': '',
@@ -120,7 +125,7 @@ export function downloadImportTemplate(categories: ProductCategory[]): void {
   const ws = XLSX.utils.json_to_sheet(sample);
   ws['!cols'] = [
     { wch: 25 }, { wch: 18 }, { wch: 30 }, { wch: 14 }, { wch: 14 },
-    { wch: 8 }, { wch: 18 }, { wch: 30 }, { wch: 30 }, { wch: 10 },
+    { wch: 8 }, { wch: 18 }, { wch: 30 }, { wch: 30 }, { wch: 30 }, { wch: 10 },
     { wch: 10 }, { wch: 40 },
   ];
   const wb = XLSX.utils.book_new();

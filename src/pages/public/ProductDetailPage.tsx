@@ -145,7 +145,8 @@ export default function ProductDetailPage() {
   const categorySlug = product?.category?.slug;
   const isUndanganDigital = categorySlug === 'undangan-digital';
   const isUndanganCetak = categorySlug === 'undangan-cetak';
-  const isUndangan = isUndanganDigital || isUndanganCetak;
+  const isUndangan3D = categorySlug === 'undangan-3d';
+  const isUndangan = isUndanganDigital || isUndanganCetak || isUndangan3D;
 
   const galleryImages = useMemo(() => {
     if (!product) return [];
@@ -334,13 +335,24 @@ export default function ProductDetailPage() {
             </div>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <button
-                type="button"
-                onClick={() => setShowOrderForm(true)}
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-charcoal-900 px-6 py-4 font-semibold text-white transition hover:opacity-90"
-              >
-                Pesan Sekarang
-              </button>
+              {product.order_button_url ? (
+                <a
+                  href={product.order_button_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-charcoal-900 px-6 py-4 font-semibold text-white transition hover:opacity-90"
+                >
+                  Pesan Sekarang
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowOrderForm(true)}
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-charcoal-900 px-6 py-4 font-semibold text-white transition hover:opacity-90"
+                >
+                  Pesan Sekarang
+                </button>
+              )}
 
               <a
                 href={wa}
@@ -469,6 +481,7 @@ export default function ProductDetailPage() {
           isUndangan={isUndangan}
           isUndanganDigital={isUndanganDigital}
           isUndanganCetak={isUndanganCetak}
+          isUndangan3D={isUndangan3D}
           onClose={() => setShowOrderForm(false)}
         />
       )}

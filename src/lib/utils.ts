@@ -66,6 +66,19 @@ export function normalizeImageUrl(url: string): string {
   return url;
 }
 
+export function getSafeExternalUrl(url: string | null | undefined): string | null {
+  if (!url?.trim()) return null;
+
+  try {
+    const parsed = new URL(url.trim());
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:'
+      ? parsed.toString()
+      : null;
+  } catch {
+    return null;
+  }
+}
+
 export function isGoogleDriveVideo(url: string): boolean {
   return isGoogleDriveUrl(url) && (url.includes('/file/d/') || url.includes('?id=') || url.includes('/d/'));
 }
